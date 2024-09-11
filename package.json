@@ -1,0 +1,30 @@
+{
+  "name": "mmm-authenticateduptimekuma",
+  "version": "1.0.0",
+  "description": "Module for MMM which connects to a uptime-kuma socket with your authentication and displaying it on your MMM",
+  "main": "MMM-uptime-kuma.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/totoluto/MMM-authenticatedUptimeKuma.git"
+  },
+  "keywords": [
+    "uptimekuma",
+    "uptime",
+    "kuma",
+    "uptime",
+    "kuma"
+  ],
+  "author": "totoluto",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/totoluto/MMM-authenticatedUptimeKuma/issues"
+  },
+  "homepage": "https://github.com/totoluto/MMM-authenticatedUptimeKuma#readme",
+  "dependencies": {
+    "events": "^3.3.0",
+    "socket.io-client": "^4.7.5"
+  }
+}
