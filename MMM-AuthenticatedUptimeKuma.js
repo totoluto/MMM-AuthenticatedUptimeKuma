@@ -2,6 +2,12 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
     defaults: {
         url: "",
         token: "",
+        displayType: "list",
+        widgetSettings: {
+            titleColor: "black",
+            backgroundColor: "#FFFFFF",
+            descriptionColor: "#666",
+        },
         monitors: []
     },
 
@@ -115,6 +121,19 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
             return wrapper;
         }
 
+        switch (this.config.displayType) {
+            case "list":
+                return this.renderList(wrapper);
+            case "widget":
+                return this.renderWidget(wrapper);
+            default:
+                wrapper.innerHTML = "Invalid display type";
+        }
+        
+        return wrapper;
+    },
+
+    renderList: function (wrapper) {
         var table = document.createElement("table");
         table.classList.add("small");
 
@@ -137,6 +156,7 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
             // Monitor name
             var nameCell = document.createElement("td");
             nameCell.innerHTML = monitorConfig.name ?? monitor.name;
+            nameCell.classList.add("title");
             row.appendChild(nameCell);
 
             // Monitor data (ping, uptime, etc.)
@@ -149,8 +169,75 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
         });
 
         wrapper.appendChild(table);
+
         return wrapper;
     },
+
+    renderWidget: function (wrapper) {
+        // Create a container for the list of widgets
+        var listContainer = document.createElement("div");
+        listContainer.classList.add("widget-list-container");
+    
+        // Iterate through the configured monitors and create a widget for each
+        this.config.monitors.forEach((monitorConfig) => {
+            const monitor = this.monitors[monitorConfig.id];
+            if (!monitor) {
+                return;
+            }
+    
+            // Create a widget container for each monitor
+            var widgetContainer = document.createElement("div");
+            widgetContainer.classList.add("monitor-widget");
+            widgetContainer.style.backgroundColor = this.config.widgetSettings.backgroundColor;
+    
+            // Monitor name
+            var nameDisplay = document.createElement("div");
+            nameDisplay.classList.add("monitor-name");
+            nameDisplay.innerHTML = monitorConfig.name ?? monitor.name;
+            nameDisplay.style.color = this.config.widgetSettings.titleColor;
+    
+            // Monitor data
+            var dataDisplay = document.createElement("div");
+            dataDisplay.classList.add("monitor-data");
+            dataDisplay.innerHTML = this.getMonitorData(monitorConfig, monitor);
+    
+            // Apply color based on monitor status
+            if (!monitor.active) {
+                dataDisplay.style.color = "orange";
+            } else if (monitor.heartbeat) {
+                if (monitor.heartbeat.status) {
+                    if (monitor.heartbeat.status === 3) {
+                        dataDisplay.style.color = "blue";
+                    } else {
+                        dataDisplay.style.color = "green";
+                    }	
+                } else {
+                  dataDisplay.style.color = "red";
+                }
+            } else {
+                dataDisplay.style.color = "gray";
+            }
+
+            // Data display name
+            var dataDisplayName = document.createElement("div");
+            dataDisplayName.classList.add("monitor-data-name");
+            dataDisplayName.innerHTML = this.getDataDisplayName(monitorConfig.display);
+            dataDisplayName.style.color = this.config.widgetSettings.descriptionColor;
+    
+            // Append elements to the widget container
+            widgetContainer.appendChild(dataDisplayName);
+            widgetContainer.appendChild(nameDisplay);
+            widgetContainer.appendChild(dataDisplay);
+    
+            // Append the widget to the list container
+            listContainer.appendChild(widgetContainer);
+        });
+    
+        // Append the list container to the wrapper
+        wrapper.appendChild(listContainer);
+    
+        return wrapper;
+    },    
 
     // Get the color-coded circle based on the status
     getStateIndicator: function (monitor) {
@@ -169,6 +256,10 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
 
         if (monitor.heartbeat) {
             if (monitor.heartbeat.status) {
+                if (monitor.heartbeat.status === 3) {
+                    indicator.style.backgroundColor = "blue";
+                    return indicator;
+                }
                 indicator.style.backgroundColor = "green";
                 return indicator;
             } else {
@@ -184,9 +275,7 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
 
     // Get the monitor data based on the configuration
     getMonitorData: function (monitorConfig, monitor) {
-        const isEnabled = monitor && monitor.active && monitor.heartbeat && monitor.heartbeat.status;
-
-        if (!isEnabled) {
+        if (!monitor || !monitor.heartbeat) {
             return "N/A";
         }
 
@@ -204,7 +293,29 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
         }
     },
 
+    getDataDisplayName: function (dataName) {
+        switch (dataName) {
+            case "ping":
+                return "Ping";
+            case "avgPing":
+                return "Average Ping";
+            case "uptime24":
+                return "Uptime (24h)";
+            case "uptime30":
+                return "Uptime (30 days)";
+            default:
+                return "";
+        }
+    },
+
     getStyles: function () {
-        return ["MMM-AuthenticatedUptimeKuma.css"];
+        switch (this.config.displayType) {
+            case "list":
+                return ["MMM-AuthenticatedUptimeKuma.css"];
+            case "widget":
+                return ["MMM-AuthenticatedUptimeKumaWidget.css"];
+            default:
+                return [];
+        }
     },
 });
