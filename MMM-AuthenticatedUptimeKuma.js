@@ -7,6 +7,7 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
             titleColor: "black",
             backgroundColor: "#FFFFFF",
             descriptionColor: "#666",
+            minWidth: "200px",
         },
         monitors: []
     },
@@ -189,6 +190,7 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
             var widgetContainer = document.createElement("div");
             widgetContainer.classList.add("monitor-widget");
             widgetContainer.style.backgroundColor = this.config.widgetSettings.backgroundColor;
+            widgetContainer.style.minWidth = this.config.widgetSettings.minWidth;
     
             // Monitor name
             var nameDisplay = document.createElement("div");
