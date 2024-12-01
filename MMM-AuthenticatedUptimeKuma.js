@@ -89,7 +89,7 @@ Module.register("MMM-AuthenticatedUptimeKuma", {
     updateUptime: function (uptimeData) {
         if (this.monitors[uptimeData.monitorID]) {
             const period = uptimeData.period;
-            const percent = uptimeData.percent * 100;
+            const percent = (uptimeData.percent * 100).toFixed(2);
 
             if (period === 24) {
                 this.monitors[uptimeData.monitorID].uptime24 = percent;
