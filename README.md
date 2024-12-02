@@ -22,9 +22,9 @@ Clone this repository:
 git clone https://github.com/totoluto/MMM-AuthenticatedUptimeKuma.git
 ```
 
-Install the dependencies after navigating to the folder (requires node to be installed)
+Install the dependencies after navigating to the folder (requires node to be installed):
 ```bash
-cd ./MMM-MMM-AuthenticatedUptimeKuma
+cd ./MMM-AuthenticatedUptimeKuma
 npm install
 ```
 
